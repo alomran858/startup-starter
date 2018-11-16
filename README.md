@@ -16,7 +16,7 @@ This is an activity related to Full Stack Nanodegree with Udacity.
 - add this project inside this VM machine: [download](https://github.com/udacity/fullstack-nanodegree-vm)
 - create the database: `python startup_setup.py`
 - seed it: `python seeder.py`
-- run the app: `python startup.py`
+- run the app: `python startup-starter.py`
 
 ## requirements:
 - List all startups in the root route
