@@ -18,6 +18,9 @@ This is an activity related to Full Stack Nanodegree with Udacity.
 - seed it: `python seeder.py`
 - run the app: `python startup-starter.py`
 
+## New Founder route:
+- To get to new founders route enter this link `startups/$id/founders`
+
 ## requirements:
 - List all startups in the root route
 - By clicking on a startup name, opens up a page with that startup details: name and founders
