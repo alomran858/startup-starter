@@ -94,6 +94,28 @@ class webServerHandler(BaseHTTPRequestHandler):
                     self.wfile.write(output)
 
                     return
+            if self.path.endswith("/founders"):
+                startup_id = self.path.split("/")[2]
+                startup = session.query(Startup).filter_by(id=startup_id).one()
+                founders = session.query(Founder).filter_by(startup_id=startup_id)
+                if startup:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'text/html')
+                    self.end_headers()
+                    output = ""
+                    output += "<html><body>"
+                    output += "<H1>StartUp Founders</H1>"
+                    for founder in founders :
+                        output += "<H3>%s</H3>"%founder.name
+                    output += "<form method ='POST' enctype='multipart/form-data' action ='/startups/add'>"
+                    output += "<input type='text' name='name' value='New Founder' placeholder='name'/>"
+                    output += "<input type='hidden' value='%s' name='startup_id' />"%startup.id
+                    output += "<br><textarea type='text' name='bio' rows='4' cols='50'>BIO </textarea>"
+                    output += "<br><button type='text' name='name' type='submit'> Add </button>"
+                    output += "</form></body></html>"
+                    self.wfile.write(output)
+
+                    return
 
         except IOError:
             self.send_error(404, 'File Not Found: %s' % self.path)
@@ -146,14 +168,31 @@ class webServerHandler(BaseHTTPRequestHandler):
                     self.send_header('Location', "/startups")
                     self.end_headers()
 
+            if self.path.endswith('/startups/add'):
+                ctype, pdict = cgi.parse_header(
+                    self.headers.getheader('content-type'))
+                if ctype == 'multipart/form-data':
+                    fields = cgi.parse_multipart(self.rfile, pdict)
+                    founder_name = str(fields.get('name')[0])
+                    startup_id = str(fields.get('startup_id')[0])
+                    bio = str(fields.get('bio')[0])
+                    founder = Founder(name=founder_name , startup_id=startup_id , bio=bio)
+                    session.add(founder)
+                    session.commit()
+                    self.send_response(301)
+                    self.send_header('content-type', "text/html")
+                    self.send_header('Location', "/startups/"+startup_id+"/founders")
+                    self.end_headers()
 
-        except:
+
+        except Exception as e:
+            print e
             pass
 
 
 def main():
     try:
-        port = 8000
+        port = 5000
         server = HTTPServer(('', port), webServerHandler)
         print "Web Server running on port %s" % port
         server.serve_forever()
